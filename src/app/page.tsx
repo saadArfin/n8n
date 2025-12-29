@@ -3,10 +3,10 @@ import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { Client } from "./client";
 
-const Page = () => {
+const Page = async () => {
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(
+  await queryClient.prefetchQuery(
     trpc.getUsers.queryOptions()
   );
 
