@@ -30,14 +30,24 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 
-const registerSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+// const registerSchema = z.object({
+//   email: z.email("Please enter a valid email address"),
+//   password: z.string().min(1, "Password is required"),
+//   confirmPassword: z.string().min(1, "Please confirm your password"),
+// }).refine((data) => data.password === data.confirmPassword, {
+//   message: "Passwords do not match",
+//   path: ["confirmPassword"],
+// });
+const registerSchema = z
+  .object({
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(1, "Password is required"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
@@ -53,25 +63,38 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = async (values: RegisterFormValues) => {
-    await authClient.signUp.email(
-        {
-            name: values.email,
-            email: values.email,
-            password: values.password,
-            callbackURL: "/"
-        },
-        {
-            onSuccess: () => {
-                router.push("/");
-        },
-        onError: (ctx) => {
-            toast.error(ctx.error.message);
-        }
+  // const onSubmit = async (values: RegisterFormValues) => {
+  //   await authClient.signUp.email(
+  //       {
+  //           name: values.email,
+  //           email: values.email,
+  //           password: values.password,
+  //           // callbackURL: "/"
+  //       },
+  //       {
+  //           onSuccess: () => {
+  //               router.push("/");
+  //       },
+  //       onError: (ctx) => {
+  //           toast.error(ctx.error.message);
+  //       }
+  //   }
+  //   )
+  // };
+const onSubmit = async (values: RegisterFormValues) => {
+  console.log("SIGNUP PAYLOAD:", values); // debug line
+  await authClient.signUp.email(
+    {
+      email: values.email,
+      password: values.password,
+      name: values.email, // optional
+    },
+    {
+      onSuccess: () => {router.push("/")},
+      onError: (ctx) => {toast.error(ctx.error.message)},
     }
-    )
-  };
-
+  );
+};
   const isPending = form.formState.isSubmitting;
 
   return (
