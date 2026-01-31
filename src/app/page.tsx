@@ -4,6 +4,7 @@ import { LogoutButton } from "./logout";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 
 const Page = () => {
@@ -15,13 +16,14 @@ const Page = () => {
   const create = useMutation(trpc.createWorkflow.mutationOptions({
     onSuccess: () => {
       queryClient.invalidateQueries(trpc.getWorkflows.queryOptions())
+      toast.success("Job Queued Successfullyyyyyyyyyyyyyyyy!")
     }
   }))
 
 
   return (
     <div className="min-h-screen min-w-screen flex items-center justify-center flex-col gap-y-6">
-      protected server component
+      protected component
       <div>
         {JSON.stringify(data, null, 2)}
       </div>
