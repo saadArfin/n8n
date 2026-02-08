@@ -19,7 +19,12 @@ export const executeAI = inngest.createFunction(
       {
         model: google("gemini-2.5-flash"),
         system: "You are a helpful assistant.",
-        prompt: "what is 2 + 2?"
+        prompt: "what is 2 + 2?",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     )
 
@@ -29,7 +34,12 @@ export const executeAI = inngest.createFunction(
       {
         model: openai("gpt-4o"),
         system: "You are a helpful assistant.",
-        prompt: "what is 2 + 2?"
+        prompt: "what is 2 + 2?",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     )
 
