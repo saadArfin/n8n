@@ -1,7 +1,4 @@
-
-import prisma from '@/lib/db';
-import { baseProcedure, createTRPCRouter, premiumProcedure, protectedProcedure } from '../init';
-import { inngest } from '@/inngest/client';
+import { createTRPCRouter} from '../init';
 import { workflowsRouter } from '@/features/workflows/server/router';
 export const appRouter = createTRPCRouter({
   workflows: workflowsRouter
