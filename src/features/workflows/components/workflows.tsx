@@ -1,6 +1,6 @@
 "use client";
 
-import { EntityContainer, EntityHeader, EntitySearch } from "@/components/entity-components";
+import { EntityContainer, EntityHeader, EntityPagination, EntitySearch } from "@/components/entity-components";
 import {
   useCreateWorkflow,
   useSuspenseWorkflows,
@@ -65,6 +65,21 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   );
 };
 
+
+export const WorkflowsPagination = () => {
+  const workflows = useSuspenseWorkflows();
+  const [params, setParams] = useWorkflowsParams();
+
+  return (
+    <EntityPagination
+      disabled={workflows.isFetching}
+      totalPages={workflows.data.totalPages}
+      page={workflows.data.page}
+      onPageChange={(page) => setParams({ ...params, page })}
+    />
+  );
+};
+
 export const WorkflowsContainer = ({
   children,
 }: {
@@ -74,7 +89,7 @@ export const WorkflowsContainer = ({
     <EntityContainer
       header={<WorkflowsHeader />}
       search={<WorkflowsSearch />}
-      pagination={<></>}
+      pagination={<WorkflowsPagination />}
     >
       {children}
     </EntityContainer>

@@ -52,40 +52,38 @@ export const EntityHeader = ({
   );
 };
 
-
 type EntityContainerProps = {
-    children: React.ReactNode;
-    header?: React.ReactNode;
-    search?: React.ReactNode;
-    pagination?: React.ReactNode;
-}
+  children: React.ReactNode;
+  header?: React.ReactNode;
+  search?: React.ReactNode;
+  pagination?: React.ReactNode;
+};
 
 export const EntityContainer = ({
-    children,
-    header,
-    search,
-    pagination
+  children,
+  header,
+  search,
+  pagination,
 }: EntityContainerProps) => {
-    return (
-        <div className="p-4 md:px-10 md:py-6 h-full">
-            <div className="mx-auto max-w-7xl w-full flex flex-col gap-y-8 h-full">
-            {header}
-            <div className="flex flex-col gap-y-4 h-full">
-                {search}
-                {children}
-            </div>
-            {pagination}
-            </div>
+  return (
+    <div className="p-4 md:px-10 md:py-6 h-full">
+      <div className="mx-auto max-w-7xl w-full flex flex-col gap-y-8 h-full">
+        {header}
+        <div className="flex flex-col gap-y-4 h-full">
+          {search}
+          {children}
         </div>
-    )
-}
+        {pagination}
+      </div>
+    </div>
+  );
+};
 
 interface EntitySearchProps {
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
 }
-
 
 export const EntitySearch = ({
   value,
@@ -101,6 +99,47 @@ export const EntitySearch = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+    </div>
+  );
+};
+
+interface EntityPaginationProps {
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  disabled?: boolean;
+}
+
+export const EntityPagination = ({
+  page,
+  totalPages,
+  onPageChange,
+  disabled,
+}: EntityPaginationProps) => {
+  return (
+    <div className="flex items-center justify-between gap-x-2 w-full">
+      <div className="flex-1 text-sm text-muted-foreground">
+        Page {page} of {totalPages || 1}
+      </div>
+
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          disabled={page === 1 || disabled}
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(Math.max(1, page - 1))}
+        >
+          Previous
+        </Button>
+        <Button
+          disabled={page === totalPages || totalPages === 0 || disabled}
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
