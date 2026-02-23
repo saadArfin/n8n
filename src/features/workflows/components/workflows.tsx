@@ -1,6 +1,15 @@
 "use client";
 
-import { EntityContainer, EntityHeader, EntityPagination, EntitySearch } from "@/components/entity-components";
+import {
+  EmptyView,
+  EntityContainer,
+  EntityHeader,
+  EntityList,
+  EntityPagination,
+  EntitySearch,
+  ErrorView,
+  LoadingView,
+} from "@/components/entity-components";
 import {
   useCreateWorkflow,
   useSuspenseWorkflows,
@@ -11,9 +20,11 @@ import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
 
 export const WorkflowsSearch = () => {
-
-  const [params, setParams] = useWorkflowsParams()
-  const { searchValue, onSearchChange } = useEntitySearch({ params, setParams })
+  const [params, setParams] = useWorkflowsParams();
+  const { searchValue, onSearchChange } = useEntitySearch({
+    params,
+    setParams,
+  });
   return (
     <EntitySearch
       value={searchValue}
@@ -27,9 +38,12 @@ export const WorkflowsList = () => {
   const workflows = useSuspenseWorkflows();
 
   return (
-    <div className="flex-1 flex justify-center items-center">
-      <p>{JSON.stringify(workflows.data, null, 2)}</p>
-    </div>
+    <EntityList
+      items={workflows.data.items}
+      getKey={(workflow) => workflow.id}
+      renderItem={(workflow) => <p>{workflow.name}</p>}
+      emptyView={<WorkflowsEmpty />}
+    />
   );
 };
 
@@ -65,7 +79,6 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   );
 };
 
-
 export const WorkflowsPagination = () => {
   const workflows = useSuspenseWorkflows();
   const [params, setParams] = useWorkflowsParams();
@@ -93,5 +106,40 @@ export const WorkflowsContainer = ({
     >
       {children}
     </EntityContainer>
+  );
+};
+
+export const WorkflowsLoading = () => {
+  return <LoadingView message="Loading workflows..." />;
+};
+
+export const WorkflowsError = () => {
+  return <ErrorView message="Error loading workflows" />;
+};
+
+export const WorkflowsEmpty = () => {
+  const router = useRouter();
+  const createWorkflow = useCreateWorkflow();
+  const { handleError, modal } = useUpgradeModal();
+
+  const handleCreate = () => {
+    createWorkflow.mutate(undefined, {
+      onError: (error) => {
+        handleError(error);
+      },
+      onSuccess: (data) => {
+        router.push(`/workflows/${data.id}`);
+      }
+    });
+  };
+
+  return (
+    <>
+      {modal}
+      <EmptyView
+        onNew={handleCreate}
+        message="No workflows found! Get started by creating a workflow."
+      />
+    </>
   );
 };
