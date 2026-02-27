@@ -4,20 +4,25 @@ import {
   EmptyView,
   EntityContainer,
   EntityHeader,
+  EntityItem,
   EntityList,
   EntityPagination,
   EntitySearch,
   ErrorView,
   LoadingView,
 } from "@/components/entity-components";
+import { formatDistanceToNow } from "date-fns";
 import {
   useCreateWorkflow,
+  useRemoveWorkflow,
   useSuspenseWorkflows,
 } from "../hooks/use-workflows";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
+import type { Workflow } from "@/generated/prisma/client";
+import { WorkflowIcon } from "lucide-react";
 
 export const WorkflowsSearch = () => {
   const [params, setParams] = useWorkflowsParams();
@@ -41,7 +46,7 @@ export const WorkflowsList = () => {
     <EntityList
       items={workflows.data.items}
       getKey={(workflow) => workflow.id}
-      renderItem={(workflow) => <p>{workflow.name}</p>}
+      renderItem={(workflow) => <WorkflowItem data={workflow} />}
       emptyView={<WorkflowsEmpty />}
     />
   );
@@ -129,7 +134,7 @@ export const WorkflowsEmpty = () => {
       },
       onSuccess: (data) => {
         router.push(`/workflows/${data.id}`);
-      }
+      },
     });
   };
 
@@ -141,5 +146,33 @@ export const WorkflowsEmpty = () => {
         message="No workflows found! Get started by creating a workflow."
       />
     </>
+  );
+};
+
+export const WorkflowItem = ({ data }: { data: Workflow }) => {
+  const removeWorkflow = useRemoveWorkflow();
+
+  const handleRemove = () => {
+    removeWorkflow.mutate({ id: data.id });
+  };
+  return (
+    <EntityItem
+      href={`/workflows/${data.id}`}
+      title={data.name}
+      subtitle={
+        <>
+          Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
+          &bull; Created{" "}
+          {formatDistanceToNow(data.createdAt, { addSuffix: true })}
+        </>
+      }
+      image={
+        <div className="size-8 flex items-center justify-center">
+          <WorkflowIcon className="size-5 text-muted-foreground" />
+        </div>
+      }
+      onRemove={handleRemove}
+      isRemoving={removeWorkflow.isPending}
+    />
   );
 };
